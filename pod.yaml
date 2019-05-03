@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: odoo
+  labels:
+    mylabelname: odoo
+spec:
+  containers:
+  - name: odoo
+    image: akhdaniel2/odoo-account:latest	
+

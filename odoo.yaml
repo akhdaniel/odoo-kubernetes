@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo-deployment
+spec:
+  minReadySeconds: 1
+  selector:
+    matchLabels:
+      app: odoo
+  replicas: 1
+
+  template:
+    metadata:
+      labels:
+        app: odoo
+    spec:
+      containers:
+      - name: odoo
+        image: akhdaniel2/odoo-account:latest
+        env:
+        - name: HOST
+          value: db

@@ -1,0 +1,77 @@
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odoo-deployment
+spec:
+  minReadySeconds: 1
+  selector:
+    matchLabels:
+      app: odoo
+  replicas: 1
+
+  template:
+    metadata:
+      labels:
+        app: odoo
+    spec:
+      containers:
+      - name: odoo
+        image: akhdaniel2/odoo-account:latest
+        env:
+        - name: HOST
+          value: db
+        volumeMounts:
+        - name: odoo-web-pvc
+          mountPath: /var/lib/odoo/sessions
+      volumes:
+      - name: odoo-web-pvc
+        persistentVolumeClaim:
+          claimName: odoo-web-pvc
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: odoo-web-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv0002
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /tmp/pv0002/
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: odoo-service
+spec:
+  selector: 
+    app: odoo
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8069
+  type: LoadBalancer
+
+
