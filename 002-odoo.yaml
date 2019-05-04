@@ -61,6 +61,7 @@ spec:
 
 ---
 
+## NodePort
 apiVersion: v1
 kind: Service
 metadata:
@@ -70,8 +71,22 @@ spec:
     app: odoo
   ports:
   - name: http
-    port: 80
-    targetPort: 8069
-  type: LoadBalancer
+    port: 8069
+  type: NodePort
+
+## Load balancer
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: odoo-service
+# spec:
+#   selector: 
+#     app: odoo
+#   ports:
+#   - name: http
+#     port: 80
+#     targetPort: 8069
+#   # type: NodePort
+
 
 
