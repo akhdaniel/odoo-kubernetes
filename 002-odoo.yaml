@@ -1,9 +1,6 @@
-
----
-
 apiVersion: apps/v1
 kind: Deployment
-metadata:
+metadata: 
   name: odoo-deployment
 spec:
   minReadySeconds: 1
@@ -15,17 +12,23 @@ spec:
   template:
     metadata:
       labels:
-        app: odoo
+        app: odoo 
     spec:
       containers:
-      - name: odoo
+      - name: odoo 
         image: akhdaniel2/odoo-account:latest
         env:
         - name: HOST
           value: db
+
         volumeMounts:
         - name: odoo-web-pvc
-          mountPath: /var/lib/odoo/sessions
+          mountPath: /var/lib/odoo
+          
+        securityContext:
+          privileged: true
+          runAsUser: 0
+
       volumes:
       - name: odoo-web-pvc
         persistentVolumeClaim:
@@ -33,11 +36,10 @@ spec:
 
 
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: odoo-web-pvc
+  name: odoo-filestore-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -46,7 +48,19 @@ spec:
       storage: 5Gi
 
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: odoo-sessions-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 
+
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -55,38 +69,23 @@ spec:
   accessModes:
     - ReadWriteOnce
   capacity:
-    storage: 5Gi
+    storage: 10Gi
   hostPath:
     path: /tmp/pv0002/
 
----
 
-## NodePort
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: odoo-service
 spec:
-  selector: 
+  selector:
     app: odoo
   ports:
-  - name: http
-    port: 8069
-  type: NodePort
-
-## Load balancer
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: odoo-service
-# spec:
-#   selector: 
-#     app: odoo
-#   ports:
-#   - name: http
-#     port: 80
-#     targetPort: 8069
-#   # type: NodePort
-
+  - name: http 
+    port: 80
+    targetPort: 8069 
+  type: LoadBalancer
 
 

@@ -1,20 +1,18 @@
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: db-deployment
+  name: db-deplyoment
 spec:
   minReadySeconds: 1
   selector:
     matchLabels:
-      app: db
+      app: db 
   replicas: 1
-  
+
   template:
     metadata:
       labels:
-        app: db
+        app: db 
     spec:
       containers:
       - name: postgres
@@ -24,11 +22,12 @@ spec:
           value: odoo
         - name: POSTGRES_PASSWORD
           value: odoo
-        - name: POSTGRES_DATABASE
-          value: odoo
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         ports:
         - containerPort: 5432
           name: db
+
         volumeMounts:
         - name: odoo-db-pvc
           mountPath: /var/lib/postgresql/data
@@ -36,8 +35,8 @@ spec:
       - name: odoo-db-pvc
         persistentVolumeClaim:
           claimName: odoo-db-pvc
----
 
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -48,8 +47,8 @@ spec:
   resources:
     requests:
       storage: 5Gi
----
 
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -70,11 +69,13 @@ kind: Service
 metadata:
   name: db
 spec:
-  selector: 
+  selector:
     app: db
   ports:
   - name: db
     port: 5432
   type: NodePort
+
+
 
 
